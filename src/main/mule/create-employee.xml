@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="77bb6c2c-7b08-4a75-840b-d4159cf995df" >
+		<http:request-connection host="reqres.in" port="443" />
+	</http:request-config>
+	<flow name="create-employeeFlow" doc:id="70d61183-c181-45a9-a954-d2b147491b43" >
+		<http:listener doc:name="Listener" doc:id="72f349ea-f802-4bfd-8ecd-1008316f44ce" config-ref="HTTP_Listener_config" path="create" outputMimeType="application/json"/>
+		<ee:transform doc:name="Transform Message" doc:id="ed809d91-b99e-4e8d-a2b6-de873555eb75" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name": payload.employeeName,
+	"job": payload.title
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="5b493afa-09a6-4b13-8e3c-fef2783b24b0" config-ref="HTTP_Request_configuration" url="https://reqres.in/api/users" outputMimeType="application/json"/>
+		<ee:transform doc:name="Transform Message" doc:id="697316b7-ed38-4943-b25d-14d042980ac6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 200,
+	"message": "Successfully created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

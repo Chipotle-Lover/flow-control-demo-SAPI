@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="501e4a38-eccc-4f8a-8fd8-23a40d6ac10a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="1ecbea6c-5a6d-40db-903f-af316eade808" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Habtamu3442$" database="employees" />
+	</db:config>
+	<flow name="flow-control-demoFlow" doc:id="57489049-d663-4e32-83ae-6b5992ff7c5d" >
+		<ee:transform doc:name="Transform Message" doc:id="b35e006a-0cc3-4ea0-93ae-5424a9a8790e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var country = 'USA'
+var city = ""
+---
+{
+	Currency: if(country =="USA")  "USD" else if(country =="Ethiopia")"Birr" else "None",
+	City: if(city != null) city as String else "",
+	now: now(),
+	isLeapYear: isLeapYear(|2023-07-31T22:54:25|),
+	isLeapYear: isLeapYear(|2020-02-29T22:54:25|),
+	days: daysBetween(|2020-02-29T22:54:25|, |2023-07-31T22:54:25|),
+	epochTime: now() as Number,
+	seconds: now().year,
+	quarter: now().quarter,
+	dayOfWeek: now().offsetSeconds
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flow-control-demoFlow2" doc:id="e096a571-6c9b-45d4-b33b-f3f4e146fd65" >
+		<ee:transform doc:name="Transform Message" doc:id="49e5b8a6-16f0-4060-a05f-9b4d341d6131" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var name = 'Habtamu'
+var empSkills = ["skill1", "skill2"] as Array
+var emp = {
+	"EmpId": 100,
+	"empName": "Socrates",
+	"Status": "A"
+}
+var empList = [
+	{
+	"EmpId": 101,
+	"empName": "Doc",
+	"Status": "A"
+},
+{
+	"EmpId": 102,
+	"empName": "Suz",
+	"Status": "A"
+}
+]
+---
+{
+	"abs": abs(-2),
+	"abs-dec": abs(-3.5),
+	"average-age": avg([1,2,3,4]),
+	"ceil": ceil(1.1),
+	"floor": floor(2.76),
+	"round": round(2.4),
+	"min": min([1,2,3]),
+	"max": max([43,25,55]),
+	"minBy": [{"a":1},{"a":5},{"a":8}]maxBy(item)->item.a,
+	"isEven": isEven(3),
+	"isOdd": isOdd(3),
+	"isInteger": isInteger(1.5),
+	"isDecimal": isDecimal(1.5),
+	"contains": "MuleSoft" contains ('Mule'),
+	"find": "book" find("o"),
+	"isBlank": isBlank("hello"),
+	"isEmpty": isEmpty("hello"),
+	"matcher": "me@mulesoft.com" matches(/([a-z]*)@([a-z]*).com/),
+	"replace": "admin123" replace "123" with "ID",
+	"splitBy": ("a-b-c" splitBy("-"))[0],
+	'trim': trim(" my long test "),
+	"sizeOf": sizeOf(name),
+	"sizename": sizeOf(empSkills),
+	"emp": sizeOf(emp.empName),
+	"empList": namesOf(emp),
+	"entries": entriesOf(emp).value
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flow-control-demoFlow4" doc:id="d3691857-92e4-4bdf-bbc9-a6913a3d66ae" >
+		<ee:transform doc:name="Transform Message" doc:id="5c33ff42-2a0e-42f5-8f70-6ffcfbd5b3a0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var employee = {
+	"empId":1,
+	"empName": "Hab",
+	"empStatus": "A"
+	
+}
+
+var empList = [{
+	"empId":1,
+	"empName": "Hab",
+	"empStatus": "A"
+	
+},
+{
+	"empId":1,
+	"empName": "Hab",
+	"empStatus": "A"
+	
+},
+[{
+	"empId":3,
+	"empName": "Gahsu",
+	"empStatus": "I"
+	
+},
+{
+	"empId":4,
+	"empName": "roster",
+	"empStatus": "I"
+	
+}]]
+---
+
+//flatten(empList),
+//employee pluck $
+employee pluck $$
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flow-control-demoFlow3" doc:id="21ce43bc-fcd6-4e46-937c-8a0475549307" >
+		<ee:transform doc:name="Transform Message" doc:id="3fba1a59-dae5-4949-9ff0-9ab22d4dd5e2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var empList = [{
+	"empId":1,
+	"empName": "Hab",
+	"empStatus": "A"
+	
+},
+{
+	"empId":1,
+	"empName": "Hab",
+	"empStatus": "A"
+	
+},
+{
+	"empId":3,
+	"empName": "Gahsu",
+	"empStatus": "I"
+	
+},
+{
+	"empId":4,
+	"empName": "roster",
+	"empStatus": "I"
+	
+}]
+---
+ {
+ 	"orderBy": empList orderBy $.empId,
+ 	"distinct": empList distinctBy $.empStatus,
+ 	"group": empList groupBy $.empStatus,
+ 	"join": (empList filter($.empStatus=="I")).empId joinBy ",",
+ 	"employees": empList orderBy $.empId distinctBy $.empId map((item, index)->{
+ 		"employeeId": item.empId,
+ 		"employeeName": item.empName,
+ 		"employeeStatus": item.empStatus
+ 	})
+ 	
+ }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flow-control-demoFlow1" doc:id="b6b4d532-e101-41fc-ba72-c64c937a0397" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="dbd43be1-668d-4feb-b698-a4ffb52f6a88" config-ref="HTTP_Listener_config" path="/emp/{empId}"/>
+		<set-variable value="#[attributes.uriParams.empId]" doc:name="empId" doc:id="f5d952bc-d11c-47c9-b0bb-93473ac46071" variableName="employeeId"/>
+		<db:select doc:name="Select" doc:id="4bb364b9-b31a-4890-b224-5c500e36ed45" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT empId, empName, empStatus, empJoinDate, empAddress from emp where empId =:empId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empId: vars.employeeId
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="8f810860-8483-498c-90d2-273513be9b1b" >
+			<when expression="#[sizeOf(payload)&gt;0]">
+				<ee:transform doc:name="Transform Message" doc:id="969b250a-0386-43f0-b6d0-8d75b98b0328" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"employeeId": payload[0].empId,
+	"employeeName": payload[0].empName,
+	"employeeStatus": payload[0].empStatus,
+	"employeeJoinDate": payload[0].empJoinDate,
+	"employeeAddress": payload[0].empAddress
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="4fcb708f-230d-4bc3-85cd-dc73a80b9653" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 404,
+	"message": "Employee Not Found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+<ee:transform doc:name="Transform Message" doc:id="cf3154cf-5da7-4daf-bcfb-494bf2d353aa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5721ffe8-eb0d-4e98-aeb4-2beb189c211b" message="#[payload]"/>
+		<!-- [STUDIO:"Transform Message"]		<ee:transform doc:name="Transform Message" doc:id="829e773d-93db-47bc-b515-25dee0032c42" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun calExperience (joinDate)= daysBetween(payload[0].empJoinDate as LocalDateTime {format: "yyyy-MM-dd HH:mm:ss"}, now() as LocalDateTime{format: "yyyy-MM-dd HH:mm:ss"})/365
+var test = null
+&#45;&#45;-
+if(sizeOf(payload)>0)
+{
+	empId: payload[0].empId,
+	empName: payload[0].empName,
+	empJoinDate: payload[0].empJoinDate,
+	experience: calExperience(payload[0].empJoinDate),
+	gratuity: if((calExperience(payload[0].empJoinDate))>5) "eligible" else "Not-eligible",
+	(test: test) if(test != null) // to exclude null field from a json object
+	
+} else {
+	"message": "Employee Not Found"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform> [STUDIO] -->
+	</flow>
+	<flow name="flow-control-demoFlow5" doc:id="b838ddd3-f701-4c06-9368-6fb0d5f96b34" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="91158c24-4449-4175-9352-2a27b76f466f" config-ref="HTTP_Listener_config" path="/insert"/>
+		<ee:transform doc:name="Pluck-function" doc:id="30703497-2ab5-446a-bb45-e2a8d57484a9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"empId": payload.empId,
+	"empName": payload.empName,
+	"empAddress": payload.empAddress pluck $ joinBy ",",
+	"empStatus": payload.empStatus,
+	"empJoinDate": payload.empJoinDate
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="bbd3c113-9286-42c8-9451-ed2b7e1ac50e" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO emp(empId, empName, empStatus, empJoinDate, empAddress) Values(:empId, :empName, :empStatus, :empJoinDate, :empAddress)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+	</flow>
+	<flow name="flow-control-demoFlow6" doc:id="2de3d607-a4c0-4a0f-86b9-1dc7d10b2d78" >
+		<http:listener doc:name="Listener" doc:id="96d34e79-d162-4a11-a66a-43fbf1b5a81f" config-ref="HTTP_Listener_config" path="employees"/>
+		<set-variable value="#[attributes.queryParams.empStatus]" doc:name="Set Variable" doc:id="93d71ff9-1ebe-4326-ab9d-02943131b8da" variableName="empStatus"/>
+		<ee:transform doc:name="Transform Message" doc:id="cb0e57f4-0732-4d2b-8ce4-4d73a9afdea6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+if(vars.empStatus=="Active")("A")
+else if(vars.empStatus =="Passive")("I")
+else ""]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select" doc:id="2f926511-aacd-4bfd-8718-c0ead7c0e8b7" config-ref="Database_Config">
+			<db:sql ><![CDATA[Select empId, empName, empStatus from emp where empStatus=:empStatus]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"empStatus": attributes.queryParams.empStatus
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="5b1b8449-ce3b-459e-9254-d114db8ac6eb" >
+			<when expression="#[sizeOf(payload)&gt;0]">
+				<ee:transform doc:name="Transform Message" doc:id="c9a6b436-7241-4738-902a-7a62f68ac586" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ payload map {
+ 	"empId": $.empId,
+ 	"empName": $.empName,
+ 	"empStatus": $.empStatus
+ }]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="7abbdecb-bedd-4203-854b-d289538ebea0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 404,
+	"message": "Employee Not found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
