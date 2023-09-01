@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="flow-control-demo-test-suite.xml" />
+	<munit:test name="flow-control-demo-test-success" doc:id="161ea269-7af9-47e3-b097-72d96a1b79ed" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Database" doc:id="dde8d2f7-dd15-4c77-9fad-6331038ac297" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4bb364b9-b31a-4890-b224-5c500e36ed45" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl('classpath://employee/mock-payload.dwl')]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="284a7bf5-f6d8-4f4b-88a8-3d56e9fc7043" >
+				<munit:attributes value="#[readUrl('classpath://employee/setEvent-attributes-success.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to flow-control-demoFlow1" doc:id="46690dee-4ade-4bcb-9567-91810640d3e6" name="flow-control-demoFlow1"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="0f9f7f30-cf52-4342-a4af-456502b1e25b" >
+				<munit-tools:that ><![CDATA[#[import employee::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="flow-control-demo-test-failure" doc:id="0d9de28d-5ab9-41c5-a104-2391df7c0df1" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Database" doc:id="e4459d71-b2a4-4a5d-99a1-dfbcfb2667aa" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4bb364b9-b31a-4890-b224-5c500e36ed45" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl('classpath://employee/mock_payload_failure.dwl')]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="34cd5e73-59a4-44c7-b43f-0218b5870a5e" >
+				<munit:attributes value="#[readUrl('classpath://employee/set_event_failure.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to flow-control-demoFlow" doc:id="127ff7b3-9c42-483a-92e9-d1697fb965f8" name="flow-control-demoFlow1" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="5486d3d1-81df-47b5-877a-9cd22b62fc95" processor="db:select" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4bb364b9-b31a-4890-b224-5c500e36ed45" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert expression" doc:id="747fa8bd-0a6b-4c17-a59b-fbfbcb22993e" >
+				<munit-tools:that ><![CDATA[#[import employee::assert_expression_failure
+---
+assert_expression_failure::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
